@@ -222,9 +222,22 @@ public class JavaHTTPServer implements Runnable
 	private String getContentType(String fileRequested)
         {
 		if (fileRequested.endsWith(".htm")  ||  fileRequested.endsWith(".html"))
+                {
 			return "text/html";
+                }
+                else if (fileRequested.endsWith(".css"))
+                {
+                        return "text/css";
+                }
+                else if (fileRequested.endsWith(".png") || fileRequested.endsWith(".jpeg"))
+                {
+                        String ext = fileRequested.substring(fileRequested.lastIndexOf("."));
+                        return "image/"+ext;
+                }
 		else
+                {
 			return "text/plain";
+                }
 	}
 	
 	private void fileNotFound(PrintWriter out, OutputStream dataOut, String fileRequested) throws IOException {
