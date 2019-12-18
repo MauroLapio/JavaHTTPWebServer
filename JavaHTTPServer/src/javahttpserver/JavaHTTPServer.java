@@ -48,10 +48,10 @@ public class JavaHTTPServer implements Runnable
 			while (true)
                         {
 				JavaHTTPServer myServer = new JavaHTTPServer(serverConnect.accept());			
-				if (verbose) 
+				if (verbose)
                                 {
 					System.out.println("Connecton opened. (" + new Date() + ")");
-				}		
+                                }
 				// create dedicated thread to manage the client connection
 				Thread thread = new Thread(myServer);
 				thread.start();
@@ -66,8 +66,11 @@ public class JavaHTTPServer implements Runnable
 	public void run()
         {
 		// we manage our particular client connection
-		BufferedReader in = null; PrintWriter out = null; BufferedOutputStream dataOut = null;
-		String fileRequested = null;		
+		BufferedReader in = null;
+                PrintWriter out = null;
+                BufferedOutputStream dataOut = null;
+		String fileRequested = null;
+                
 		try
                 {
 			// we read characters from the client via input stream on the socket
@@ -114,24 +117,26 @@ public class JavaHTTPServer implements Runnable
 				if (fileRequested.endsWith("/"))
                                 {
 					fileRequested += DEFAULT_FILE;
-				}				
+				}
+                                
 				File file = new File(WEB_ROOT, fileRequested);
 				int fileLength = (int) file.length();
 				String content = getContentType(fileRequested);	
                                 // GET method so we return content
 				if (method.equals("GET"))
                                 {
-					byte[] fileData = readFileData(file, fileLength);					
-					// send HTTP Headers
-					out.println("HTTP/1.1 200 OK");
-					out.println("Server: Java HTTP Server from SSaurel : 1.0");
-					out.println("Date: " + new Date());
-					out.println("Content-type: " + content);
-					out.println("Content-length: " + fileLength);
-					out.println(); // blank line between headers and content, very important !
-					out.flush(); // flush character output stream buffer				
-					dataOut.write(fileData, 0, fileLength);
-					dataOut.flush();
+                                        byte[] fileData = readFileData(file, fileLength);
+                                        
+                                        // send HTTP Headers
+                                        out.println("HTTP/1.1 200 OK");
+                                        out.println("Server: Java HTTP Server from SSaurel : 1.0");
+                                        out.println("Date: " + new Date());
+                                        out.println("Content-type: " + content);
+                                        out.println("Content-length: " + fileLength);
+                                        out.println(); // blank line between headers and content, very important !
+                                        out.flush(); // flush character output stream buffer				
+                                        dataOut.write(fileData, 0, fileLength);
+                                        dataOut.flush();
 				}			
 				if (verbose)
                                 {
@@ -141,26 +146,41 @@ public class JavaHTTPServer implements Runnable
 		} 
                 catch (FileNotFoundException fnfe)
                 {
-			try 
+			try
                         {
-                                String url = null;
-                                HttpURLConnection con = (HttpURLConnection)(new URL( url ).openConnection());
-                                con.setInstanceFollowRedirects( false );
-                                con.connect();
-                                int responseCode = con.getResponseCode();
-                                System.out.println( responseCode );
-                                String location = con.getHeaderField( "Location" );
-                                System.out.println( location );
-				fileNotFound(out, dataOut, fileRequested);
+                            File file = new File(WEB_ROOT, fileRequested);
+                            boolean exists = file.exists();
+
+                            if(file.isDirectory()) //se il file richiesto si rivela una directory
+                            {
+                                int fileLength = (int) file.length();
+                                String content = getContentType(fileRequested);
+                                
+                                String location = fileRequested + "/"; //viene aggiunto il carattere '/' alla richiesta per visualizzare il file index all'interno della directory
+
+                                // send HTTP Headers
+                                out.println("HTTP/1.1 301 Moved Premanently");
+                                out.println("Date: " + new Date());
+                                out.println("Content-type: " + content);
+                                out.println("Content-length: " + fileLength);
+                                out.println("Location: "+ location);
+                                
+                                out.println(); // blank line between headers and content, very important !
+                                out.flush(); // flush character output stream buffer
+                            }
+                            else if(!exists) //se il file richiesto non esiste
+                            {
+                                fileNotFound(out, dataOut, fileRequested);
+                            }
 			} 
-                        catch (IOException ioe) 
+                        catch (IOException ioe)
                         {
-				System.err.println("Error with file not found exception : " + ioe.getMessage());
+                                System.err.println("Error with file not found exception : " + ioe.getMessage());
 			}		
 		} 
                 catch (IOException ioe) 
                 {
-			System.err.println("Server error : " + ioe);
+                        System.err.println("Server error : " + ioe);
 		} 
                 finally 
                 {
