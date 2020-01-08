@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Conf
 {
-    private int port;
-    private String index;
-    private String notfound;
-    private String notsupported;
+    private int port; //porta di connessione
+    private String index; //pagina iniziale
+    private String notfound; //pagina di errore 404
+    private String notsupported; //pagina di errore metodo non supportato
 
     public int getPort()
     {

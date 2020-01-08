@@ -29,7 +29,7 @@ public class JavaHTTPServer implements Runnable
 	static String FILE_NOT_FOUND;
 	static String METHOD_NOT_SUPPORTED;
 	// port to listen connection
-	static int PORT=0; //inizializzata a 0 per testing
+	static int PORT; //inizializzata a 0 per testing
 	// verbose mode
 	static final boolean verbose = true;
 	// Client Connection via Socket Class
@@ -59,6 +59,7 @@ public class JavaHTTPServer implements Runnable
                     {
                         ex.printStackTrace();
                     }
+                    
                     DEFAULT_FILE = conf.getIndex();
                     FILE_NOT_FOUND = conf.getNotfound();
                     METHOD_NOT_SUPPORTED = conf.getNotsupported();
