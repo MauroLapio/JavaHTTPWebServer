@@ -25,9 +25,9 @@ public class JavaHTTPServer implements Runnable
 { 
 	
 	static final File WEB_ROOT = new File(".");
-	static final String DEFAULT_FILE = "index.html";
-	static final String FILE_NOT_FOUND = "404.html";
-	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
+	static String DEFAULT_FILE;
+	static String FILE_NOT_FOUND;
+	static String METHOD_NOT_SUPPORTED;
 	// port to listen connection
 	static int PORT=0; //inizializzata a 0 per testing
 	// verbose mode
@@ -59,21 +59,25 @@ public class JavaHTTPServer implements Runnable
                     {
                         ex.printStackTrace();
                     }
-                        PORT = Integer.valueOf(conf.getPort());
-			ServerSocket serverConnect = new ServerSocket(PORT);
-			System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");		
-			// we listen until user halts server execution
-			while (true)
-                        {
-				JavaHTTPServer myServer = new JavaHTTPServer(serverConnect.accept());			
-				if (verbose)
-                                {
-					System.out.println("Connecton opened. (" + new Date() + ")");
-                                }
-				// create dedicated thread to manage the client connection
-				Thread thread = new Thread(myServer);
-				thread.start();
-			}			
+                    DEFAULT_FILE = conf.getIndex();
+                    FILE_NOT_FOUND = conf.getNotfound();
+                    METHOD_NOT_SUPPORTED = conf.getNotsupported();
+        
+                    PORT = conf.getPort();
+                    ServerSocket serverConnect = new ServerSocket(PORT);
+                    System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");		
+                    // we listen until user halts server execution
+                    while (true)
+                    {
+                            JavaHTTPServer myServer = new JavaHTTPServer(serverConnect.accept());			
+                            if (verbose)
+                            {
+                                    System.out.println("Connecton opened. (" + new Date() + ")");
+                            }
+                            // create dedicated thread to manage the client connection
+                            Thread thread = new Thread(myServer);
+                            thread.start();
+                    }			
 		} catch (IOException e) 
                 {
 			System.err.println("Server Connection error : " + e.getMessage());
