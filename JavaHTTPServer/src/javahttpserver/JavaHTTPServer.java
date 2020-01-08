@@ -12,9 +12,11 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.StringTokenizer;
+import javax.xml.bind.JAXBException;
 
 // The tutorial can be found just here on the SSaurel's Blog : 
 // https://www.ssaurel.com/blog/create-a-simple-http-web-server-in-java
@@ -27,12 +29,12 @@ public class JavaHTTPServer implements Runnable
 	static final String FILE_NOT_FOUND = "404.html";
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 	// port to listen connection
-	static final int PORT = 8080;	
+	static int PORT=0; //inizializzata a 0 per testing
 	// verbose mode
 	static final boolean verbose = true;
 	// Client Connection via Socket Class
 	private Socket connect;
-	
+        
 	public JavaHTTPServer(Socket c) 
         {
 		connect = c;
@@ -42,6 +44,22 @@ public class JavaHTTPServer implements Runnable
         {
 		try
                 {
+                    Conf conf=null;
+                    try
+                    {
+                        AppConfigParser configParser = new AppConfigParser();
+                        conf = configParser.parse("javahttpserver/conf.xml");
+                        System.out.println(conf);
+                    }
+                    catch (JAXBException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    catch (URISyntaxException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                        PORT = Integer.valueOf(conf.getPort());
 			ServerSocket serverConnect = new ServerSocket(PORT);
 			System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");		
 			// we listen until user halts server execution
