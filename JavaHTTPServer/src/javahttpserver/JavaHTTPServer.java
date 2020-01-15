@@ -45,11 +45,18 @@ public class JavaHTTPServer implements Runnable
 		try
                 {
                     Conf conf=null;
+                    Cliente client=new Cliente();
+                    
                     try
                     {
                         AppConfigParser configParser = new AppConfigParser();
                         conf = configParser.parse("javahttpserver/conf.xml");
+                        
+                        AppClientParser clientParser = new AppClientParser();
+                        clientParser.parse(client);
+                        
                         System.out.println(conf);
+                        System.out.println(client);
                     }
                     catch (JAXBException ex)
                     {
@@ -108,7 +115,7 @@ public class JavaHTTPServer implements Runnable
 			StringTokenizer parse = new StringTokenizer(input);
 			String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
 			// we get file requested
-			fileRequested = parse.nextToken().toLowerCase();			
+			fileRequested = parse.nextToken().toLowerCase();		
 			// we support only GET and HEAD methods, we check
 			if (!method.equals("GET")  &&  !method.equals("HEAD"))
                         {
@@ -251,6 +258,10 @@ public class JavaHTTPServer implements Runnable
                 else if (fileRequested.endsWith(".css"))
                 {
                         return "text/css";
+                }
+                else if (fileRequested.endsWith(".xml"))
+                {
+                        return "text/xml";
                 }
                 else if (fileRequested.endsWith(".png") || fileRequested.endsWith(".jpeg"))
                 {
